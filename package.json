@@ -1,0 +1,10 @@
+{
+  "name": "court-order-formatter",
+  "version": "1.0.0",
+  "description": "Web application that parses raw case information and generates formatted court orders.",
+  "type": "module",
+  "scripts": {
+    "test": "node tests/run-tests.mjs",
+    "start": "python3 -m http.server 8420"
+  }
+}
