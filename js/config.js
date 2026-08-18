@@ -1,7 +1,7 @@
 // Central configuration: defaults, constants, external links.
 
 // Link to the companion PDF splitter tool (shown in the sidebar card).
-export const PDF_SPLITTER_URL = 'https://pdf-splitter-7jal.onrender.com/';
+export const PDF_SPLITTER_URL = 'https://court-pdf-splitter.netlify.app/';
 
 export const DEFAULT_JUDGE_PROFILE = {
   name: 'Neeraj Gaur',
