@@ -4,6 +4,7 @@
 
 import { readDocumentParagraphs } from './docread.js';
 import { parseCauseList } from './causelist.js';
+import { parseCnrLookup, attachCnrs } from './cnr.js';
 import { buildSheets } from './sheets.js';
 import { generateDocx } from './docxgen.js';
 import { generateOdt } from './odtgen.js';
@@ -20,6 +21,7 @@ const state = {
   fileKind: '',
   fileSize: 0,
   parsed: null,          // { header, cases, stages, warnings }
+  cnr: null,             // { fileName, fileSize, map, count }
   options: createDefaultOptions(),
   previewTab: 'paper',   // paper | cases
 };
@@ -129,6 +131,67 @@ function renderFileSummary() {
 }
 
 // ---------------------------------------------------------------------------
+// CNR lookup upload (optional)
+
+function showCnrError(message) {
+  const el = $('cnr-error');
+  el.textContent = message || '';
+  el.hidden = !message;
+}
+
+function acceptCnrFile(file) {
+  showCnrError('');
+  if (!file) return;
+  if (!/\.(docx|odt)$/i.test(file.name)) {
+    showCnrError(`"${file.name}" is not supported. Please upload a .docx or .odt CNR lookup file.`);
+    return;
+  }
+  if (file.size > MAX_FILE_BYTES) {
+    showCnrError(`"${file.name}" is too large (${(file.size / 1024 / 1024).toFixed(1)} MB). The maximum supported size is 10 MB.`);
+    return;
+  }
+  file.arrayBuffer().then((buf) => {
+    try {
+      const { paragraphs } = readDocumentParagraphs(new Uint8Array(buf));
+      const { map, count, warnings } = parseCnrLookup(paragraphs);
+      if (!count) {
+        showCnrError(warnings[0]);
+        return;
+      }
+      state.cnr = { fileName: file.name, fileSize: file.size, map, count };
+      renderAll();
+      showToast(`CNR lookup loaded: ${count} entries from ${file.name}`);
+    } catch (err) {
+      showCnrError(err.message);
+    }
+  }).catch(() => showCnrError(`The file "${file.name}" could not be read.`));
+}
+
+function removeCnrFile() {
+  state.cnr = null;
+  $('cnr-file-input').value = '';
+  showCnrError('');
+  renderAll();
+  showToast('CNR lookup removed');
+}
+
+function renderCnrSummary() {
+  const c = state.cnr;
+  $('cnr-summary').hidden = !c;
+  $('cnr-dropzone').hidden = !!c;
+  if (!c) return;
+  $('cnr-name').textContent = c.fileName;
+  $('cnr-meta').textContent = `${(c.fileSize / 1024).toFixed(0)} KB · ${c.count} CNR entries`;
+  const info = $('cnr-match-info');
+  if (state.parsed) {
+    const { matched } = attachCnrs(state.parsed.cases, c.map);
+    info.textContent = `${matched} of ${state.parsed.cases.length} cases matched — the CNR No. will be printed on those sheets.`;
+  } else {
+    info.textContent = 'Upload the cause list above to match CNR numbers against it.';
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Judge profiles (localStorage)
 
 function loadProfiles() {
@@ -232,9 +295,15 @@ function renderLocations() {
 // ---------------------------------------------------------------------------
 // Preview + generation status
 
+function currentCases() {
+  if (!state.parsed) return [];
+  if (!state.cnr) return state.parsed.cases;
+  return attachCnrs(state.parsed.cases, state.cnr.map).cases;
+}
+
 function currentSheets() {
   if (!state.parsed) return [];
-  return buildSheets(state.parsed.cases, state.options);
+  return buildSheets(currentCases(), state.options);
 }
 
 function renderPreview() {
@@ -276,9 +345,9 @@ function renderPreview() {
   } else {
     const tbody = $('cases-tbody');
     tbody.innerHTML = '';
-    for (const c of state.parsed.cases) {
+    for (const c of currentCases()) {
       const tr = document.createElement('tr');
-      for (const value of [c.serial, c.caseId || '—', c.title, c.stage || '—']) {
+      for (const value of [c.serial, c.caseId || '—', c.cnr || '—', c.title, c.stage || '—']) {
         const td = document.createElement('td');
         td.textContent = value;
         tr.appendChild(td);
@@ -298,7 +367,12 @@ function renderGenerateStatus() {
   } else if (!state.options.causeListDate) {
     status.textContent = 'Select the cause list date above to enable generation.';
   } else {
-    status.textContent = `Ready: ${state.parsed.cases.length} order sheets · dated ${formatDateDots(state.options.causeListDate)} · stamp of ${state.options.judgeName || '—'}.`;
+    let text = `Ready: ${state.parsed.cases.length} order sheets · dated ${formatDateDots(state.options.causeListDate)} · stamp of ${state.options.judgeName || '—'}.`;
+    if (state.cnr) {
+      const { matched } = attachCnrs(state.parsed.cases, state.cnr.map);
+      text += ` CNR No. on ${matched} of ${state.parsed.cases.length} sheets.`;
+    }
+    status.textContent = text;
   }
 }
 
@@ -309,6 +383,7 @@ function renderDateHint() {
 
 function renderAll() {
   renderDateHint();
+  renderCnrSummary();
   renderPreview();
   renderGenerateStatus();
 }
@@ -411,6 +486,24 @@ function init() {
     fileInput.value = '';
   });
   $('btn-remove-file').addEventListener('click', removeFile);
+
+  // CNR lookup dropzone
+  const cnrDz = $('cnr-dropzone');
+  const cnrInput = $('cnr-file-input');
+  cnrDz.addEventListener('click', () => cnrInput.click());
+  cnrDz.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); cnrInput.click(); } });
+  cnrDz.addEventListener('dragover', (e) => { e.preventDefault(); cnrDz.classList.add('is-dragover'); });
+  cnrDz.addEventListener('dragleave', () => cnrDz.classList.remove('is-dragover'));
+  cnrDz.addEventListener('drop', (e) => {
+    e.preventDefault();
+    cnrDz.classList.remove('is-dragover');
+    acceptCnrFile(e.dataTransfer.files[0]);
+  });
+  cnrInput.addEventListener('change', () => {
+    acceptCnrFile(cnrInput.files[0]);
+    cnrInput.value = '';
+  });
+  $('btn-remove-cnr').addEventListener('click', removeCnrFile);
 
   // Details
   bindToggle('opt-right-align', 'rightAlignCaseDetails');

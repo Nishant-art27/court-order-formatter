@@ -31,6 +31,12 @@ npm test           # pipeline tests (Node, no dependencies to install)
    case (`ROSHAN LAL Vs. M/S SABDA EXPORTS` → `Roshan Lal Vs. M/S Sabda
    Exports`). Parse problems are reported as notes, never hidden — the parsed
    count is checked against the declared total.
+   Optionally, upload a **CNR lookup table** (`cnr.docx` / `cnr.odt` — the
+   case-status table export with 16-character CNR numbers like
+   `DLCT130007092015`). Cases are matched by case number — `L I R/651/2016`
+   in the table matches `L I R ID342/2015 651/16` and `L I R 651/16` alike —
+   and a bold `CNR No: …` line is printed under the title on every matched
+   sheet.
 2. **Details** — ADJ/DJ Court, Classic Stamp. Judge name / designation /
    court name default to *Neeraj Gaur, Presiding Officer Labour Court-01,
    RADC* and are fully editable; **Save Judge Details** stores extra profiles
@@ -51,6 +57,7 @@ Each generated sheet looks like:
 ```
 L I R 2365/21
 Roshan Lal Vs. M/S Sabda Exports
+CNR No: DLCT130047922021   ← only when the CNR lookup is uploaded
 
 13.08.2026
 

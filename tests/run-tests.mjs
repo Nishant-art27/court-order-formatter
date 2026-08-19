@@ -4,6 +4,7 @@
 import { unzipSync, strFromU8 } from '../js/vendor/fflate.js';
 import { readDocumentParagraphs } from '../js/docread.js';
 import { parseCauseList } from '../js/causelist.js';
+import { caseKey, parseCnrLookup, attachCnrs } from '../js/cnr.js';
 import { buildSheets, buildStampLines } from '../js/sheets.js';
 import { generateDocx, generateDocxXml } from '../js/docxgen.js';
 import { generateOdt, generateOdtContentXml } from '../js/odtgen.js';
@@ -165,6 +166,53 @@ check('opt: body spacing applied to order space', ss.paragraphs.some((p) => p.te
 // Location duplication guard
 const optsDupLoc = { ...opts, courtName: 'RADC, New Delhi' };
 eq('stamp: location not duplicated', buildStampLines(optsDupLoc)[2], 'RADC, New Delhi');
+
+// ---------------------------------------------------------------------------
+// cnr: lookup parsing + matching
+
+eq('cnr key: cause list style', caseKey('L I R 2365/21'), 'LIR|2365|2021');
+eq('cnr key: table style', caseKey('L I R/651/2016'), 'LIR|651|2016');
+eq('cnr key: old case no skipped', caseKey('L I R ID342/2015 651/16'), 'LIR|651|2016');
+eq('cnr key: LID type', caseKey('L I D 6/26'), 'LID|6|2026');
+eq('cnr key: two numbers, last wins', caseKey('L I R 429/2014 5149/16'), 'LIR|5149|2016');
+eq('cnr key: no number -> empty', caseKey('ROSHAN LAL'), '');
+eq('cnr key: 90s year', caseKey('L I R 12/95'), 'LIR|12|1995');
+
+// Simulates cell paragraphs extracted from the case-status table (odt/docx).
+const CNR_PARAS = [
+  '1', 'L I R/651/2016', 'DLCT130007092015', 'UMESH KR.SHARMA', 'Vs.', 'FIIT JEE LTD.',
+  'Total Hearings : 89', 'Order uploaded in CIS : 55', '22-08-2026',
+  '2', 'L I R/31/2026', 'DLCT130000712026', 'SABHAJEET', 'Vs.', 'M/S DOVE MANOHAR LAL AND SONS',
+  'Total Hearings : 3', '22-08-2026',
+  '3', 'L I D/6/2026 DLCT130011302026', 'VIJAY KUMAR', 'Vs.', 'M/S S. V. INDUSTRIES',
+];
+const cnrLookup = parseCnrLookup(CNR_PARAS);
+eq('cnr parse: entry count', cnrLookup.count, 3);
+eq('cnr parse: adjacent paragraphs', cnrLookup.map.get('LIR|651|2016'), 'DLCT130007092015');
+eq('cnr parse: second entry', cnrLookup.map.get('LIR|31|2026'), 'DLCT130000712026');
+eq('cnr parse: merged paragraph', cnrLookup.map.get('LID|6|2026'), 'DLCT130011302026');
+check('cnr parse: no CNRs -> warning', parseCnrLookup(['just', 'text']).warnings.length === 1);
+
+const cnrCases = parseCauseList([
+  'CAUSE LIST DATED 22-08-2026 Total Cases:3',
+  '1 L I R ID342/2015 651/16 UMESH KR.SHARMA Vs. FIIT JEE LTD.',
+  '2 L I R 31/26 SABHAJEET Vs. M/S DOVE MANOHAR LAL AND SONS',
+  '3 L I R 999/20 NO MATCH HERE Vs. X CORP',
+]).cases;
+const attached = attachCnrs(cnrCases, cnrLookup.map);
+eq('cnr attach: matched count', attached.matched, 2);
+eq('cnr attach: via old-case-no entry', attached.cases[0].cnr, 'DLCT130007092015');
+eq('cnr attach: plain entry', attached.cases[1].cnr, 'DLCT130000712026');
+eq('cnr attach: unmatched stays empty', attached.cases[2].cnr, '');
+
+const cnrSheet = buildSheets(attached.cases, opts)[0];
+const cnrPara = cnrSheet.paragraphs[2];
+eq('cnr sheet: line after title', cnrPara.text, 'CNR No: DLCT130007092015');
+check('cnr sheet: bold + follows case alignment', cnrPara.bold && cnrPara.align === 'left');
+const cnrSheetNoLookup = buildSheets(cnrCases, opts)[0];
+check('cnr sheet: absent without lookup', !cnrSheetNoLookup.paragraphs.some((p) => (p.text || '').startsWith('CNR No:')));
+check('cnr docx: CNR text present', generateDocxXml(buildSheets(attached.cases, opts)).includes('CNR No: DLCT130007092015'));
+check('cnr odt: CNR text present', generateOdtContentXml(buildSheets(attached.cases, opts)).includes('CNR No: DLCT130007092015'));
 
 // ---------------------------------------------------------------------------
 // docx generation

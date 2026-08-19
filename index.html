@@ -64,6 +64,28 @@
         </dl>
         <div id="parse-warnings" class="banner banner-warn" hidden></div>
       </div>
+
+      <div class="cnr-divider"></div>
+
+      <h3 class="cnr-title">🔎 Upload CNR Lookup Table <span class="muted-inline">(Optional)</span></h3>
+      <div id="cnr-dropzone" class="dropzone dropzone-compact" tabindex="0" role="button" aria-label="Upload CNR lookup file">
+        <p class="dropzone-text">Click to select <span class="linkish">cnr.odt / cnr.docx</span>, or drag &amp; drop</p>
+        <p class="dropzone-sub">If uploaded, the CNR No. is automatically inserted for matching cases</p>
+        <input id="cnr-file-input" type="file" accept=".docx,.odt" hidden>
+      </div>
+
+      <div id="cnr-error" class="banner banner-error" hidden></div>
+
+      <div id="cnr-summary" class="file-summary" hidden>
+        <div class="file-summary-head">
+          <div>
+            <strong id="cnr-name"></strong>
+            <span id="cnr-meta" class="muted"></span>
+          </div>
+          <button id="btn-remove-cnr" class="btn btn-ghost btn-small">✕ Remove</button>
+        </div>
+        <p id="cnr-match-info" class="muted cnr-match-info"></p>
+      </div>
     </section>
 
     <!-- 2. DETAILS -->
@@ -251,7 +273,7 @@
       <div id="preview-cases" class="preview-cases" hidden>
         <div class="table-scroll">
           <table>
-            <thead><tr><th>S.No</th><th>Case No.</th><th>Title</th><th>Stage</th></tr></thead>
+            <thead><tr><th>S.No</th><th>Case No.</th><th>CNR No.</th><th>Title</th><th>Stage</th></tr></thead>
             <tbody id="cases-tbody"></tbody>
           </table>
         </div>

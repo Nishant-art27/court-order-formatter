@@ -6,6 +6,7 @@
 // Sheet layout (mirrors the real order sheets):
 //   L I R 2365/21                       <- case id      (left or right aligned)
 //   Roshan Lal Vs. M/S Sabda Exports    <- title
+//   CNR No: DLCT130047922021            <- only when a CNR lookup is loaded
 //
 //   13.08.2026                          <- cause list date (bold optional)
 //
@@ -54,6 +55,9 @@ export function buildSheet(caseEntry, options, isFirst) {
     bold: options.boldCaseDetails, align: caseAlign, breakBefore: !isFirst,
   }));
   paragraphs.push(para(caseEntry.title, { bold: options.boldCaseDetails, align: caseAlign }));
+  if (caseEntry.cnr) {
+    paragraphs.push(para(`CNR No: ${caseEntry.cnr}`, { bold: true, align: caseAlign }));
+  }
   paragraphs.push(para(''));
 
   paragraphs.push(para(formatDateDots(options.causeListDate), { bold: options.boldDate }));
