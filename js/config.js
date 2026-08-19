@@ -17,7 +17,7 @@ export const MAX_FILE_BYTES = 10 * 1024 * 1024; // 10 MB
 // order text to be written/typed later.
 export const ORDER_SPACE_LINES = 4;
 // Blank lines reserved right after "Present :" for the counsel appearance block.
-export const APPEARANCE_BLANK_LINES = 2;
+export const APPEARANCE_BLANK_LINES = 1;
 
 // Trailing spaces per stamp line for the "Offset Right (12/4/2/2)" alignment.
 export const STAMP_OFFSET_TRAILING = [12, 4, 2, 2];
