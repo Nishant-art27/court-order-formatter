@@ -123,7 +123,7 @@ const texts = s1.paragraphs.map((p) => p.text);
 eq('sheet 1: first line is case id', texts[0], 'L I R 2365/21');
 eq('sheet 1: second line is title', texts[1], 'Roshan Lal Vs. M/S Sabda Exports');
 check('sheet 1: date present', texts.includes('13.08.2026'));
-check('sheet 1: Present line has space before colon + tab after', texts.includes('Present :\t'));
+check('sheet 1: Present line has 2 spaces before colon + tab after', texts.includes('Present  :\t'));
 const stamp = s1.paragraphs.slice(-4);
 eq('stamp: name line', stamp[0].text, '(Neeraj Gaur)');
 eq('stamp: designation', stamp[1].text, 'Presiding Officer Labour Court-01');
@@ -159,7 +159,7 @@ check('opt: bold toggles off', !snb.paragraphs.find((p) => p.text === '13.08.202
 
 const optsSpacing = { ...opts, appearanceSpacing: '1.5', bodySpacing: '2.0' };
 const ss = buildSheets(parsed.cases, optsSpacing)[0];
-check('opt: appearance spacing applied', ss.paragraphs.find((p) => p.text === 'Present :\t').spacing === '1.5');
+check('opt: appearance spacing applied', ss.paragraphs.find((p) => p.text === 'Present  :\t').spacing === '1.5');
 check('opt: body spacing applied to order space', ss.paragraphs.some((p) => p.text === '' && p.spacing === '2.0'));
 
 // Location duplication guard

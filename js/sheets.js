@@ -59,9 +59,10 @@ export function buildSheet(caseEntry, options, isFirst) {
   paragraphs.push(para(formatDateDots(options.causeListDate), { bold: options.boldDate }));
   paragraphs.push(para(''));
 
-  // "Present :" then a tab, so the appearance ("Mr. Vishal, AR for applicant.")
-  // is typed at the first tab stop, matching the physical order sheets.
-  paragraphs.push(para('Present :\t', { spacing: options.appearanceSpacing }));
+  // "Present  :" (two spaces before the colon) then a tab, so the appearance
+  // ("Mr. Vishal, AR for applicant.") is typed at the first tab stop,
+  // matching the physical order sheets.
+  paragraphs.push(para('Present  :\t', { spacing: options.appearanceSpacing }));
   for (let i = 0; i < APPEARANCE_BLANK_LINES; i++) {
     paragraphs.push(para('', { spacing: options.appearanceSpacing }));
   }

@@ -15,7 +15,7 @@ export const MAX_FILE_BYTES = 10 * 1024 * 1024; // 10 MB
 
 // Number of blank lines left between "Present :" and the judge stamp for the
 // order text to be written/typed later.
-export const ORDER_SPACE_LINES = 8;
+export const ORDER_SPACE_LINES = 4;
 // Blank lines reserved right after "Present :" for the counsel appearance block.
 export const APPEARANCE_BLANK_LINES = 2;
 

@@ -58,10 +58,12 @@ export function generateOdtContentXml(sheets) {
   for (const sheet of sheets) {
     for (const p of sheet.paragraphs) {
       const name = styleFor(p);
-      // Tabs must be <text:tab/> elements — literal tabs are collapsed by
-      // ODF whitespace rules. escapeXml leaves tabs untouched, so replacing
-      // after escaping is safe.
-      let inner = escapeXml(p.text || '').replace(/\t/g, '<text:tab/>');
+      // Tabs must be <text:tab/> elements and runs of spaces need <text:s/>
+      // (ODF whitespace rules collapse both). escapeXml leaves tabs/spaces
+      // untouched, so replacing after escaping is safe.
+      let inner = escapeXml(p.text || '')
+        .replace(/\t/g, '<text:tab/>')
+        .replace(/ {2,}/g, (m) => ` <text:s text:c="${m.length - 1}"/>`);
       if (p.trailing) inner += `<text:s text:c="${p.trailing}"/>`;
       bodyParts.push(inner ? `<text:p text:style-name="${name}">${inner}</text:p>` : `<text:p text:style-name="${name}"/>`);
     }
