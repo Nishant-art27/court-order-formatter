@@ -34,8 +34,14 @@ function paragraphXml(p) {
   pPr.push(`<w:rPr>${runProps(p.bold)}</w:rPr>`);
 
   const text = (p.text || '') + ' '.repeat(p.trailing || 0);
-  const run = text
-    ? `<w:r><w:rPr>${runProps(p.bold)}</w:rPr><w:t xml:space="preserve">${escapeXml(text)}</w:t></w:r>`
+  // Tab characters must be emitted as <w:tab/> elements — Word strips
+  // literal tabs inside <w:t>.
+  const inner = text
+    .split('\t')
+    .map((seg) => (seg ? `<w:t xml:space="preserve">${escapeXml(seg)}</w:t>` : ''))
+    .join('<w:tab/>');
+  const run = inner
+    ? `<w:r><w:rPr>${runProps(p.bold)}</w:rPr>${inner}</w:r>`
     : '';
   return `<w:p><w:pPr>${pPr.join('')}</w:pPr>${run}</w:p>`;
 }

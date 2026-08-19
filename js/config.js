@@ -13,10 +13,10 @@ export const STAMP_LOCATIONS = ['New Delhi', 'Delhi', 'Haryana', 'Punjab'];
 
 export const MAX_FILE_BYTES = 10 * 1024 * 1024; // 10 MB
 
-// Number of blank lines left between "Present:" and the judge stamp for the
+// Number of blank lines left between "Present :" and the judge stamp for the
 // order text to be written/typed later.
 export const ORDER_SPACE_LINES = 8;
-// Blank lines reserved right after "Present:" for the counsel appearance block.
+// Blank lines reserved right after "Present :" for the counsel appearance block.
 export const APPEARANCE_BLANK_LINES = 2;
 
 // Trailing spaces per stamp line for the "Offset Right (12/4/2/2)" alignment.

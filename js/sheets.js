@@ -9,7 +9,7 @@
 //
 //   13.08.2026                          <- cause list date (bold optional)
 //
-//   Present:                            <- appearance block
+//   Present :⇥                          <- appearance block (tab after colon)
 //   [blank appearance lines]
 //   [blank order-text lines]            <- space where the order is written
 //                              (Neeraj Gaur)                 <- classic stamp,
@@ -59,7 +59,9 @@ export function buildSheet(caseEntry, options, isFirst) {
   paragraphs.push(para(formatDateDots(options.causeListDate), { bold: options.boldDate }));
   paragraphs.push(para(''));
 
-  paragraphs.push(para('Present:', { spacing: options.appearanceSpacing }));
+  // "Present :" then a tab, so the appearance ("Mr. Vishal, AR for applicant.")
+  // is typed at the first tab stop, matching the physical order sheets.
+  paragraphs.push(para('Present :\t', { spacing: options.appearanceSpacing }));
   for (let i = 0; i < APPEARANCE_BLANK_LINES; i++) {
     paragraphs.push(para('', { spacing: options.appearanceSpacing }));
   }
