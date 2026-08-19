@@ -67,8 +67,13 @@ export function buildSheet(caseEntry, options, isFirst) {
   // ("Mr. Vishal, AR for applicant.") is typed at the first tab stop,
   // matching the physical order sheets.
   paragraphs.push(para('Present  :\t', { spacing: options.appearanceSpacing }));
+  // LibreOffice renders a line's extra spacing BELOW it, so the gap between
+  // the appearance block and the first order line is set by the LAST
+  // appearance blank — it takes the body spacing so that transition gap
+  // matches the order-text gaps.
   for (let i = 0; i < APPEARANCE_BLANK_LINES; i++) {
-    paragraphs.push(para('', { spacing: options.appearanceSpacing }));
+    const isLast = i === APPEARANCE_BLANK_LINES - 1;
+    paragraphs.push(para('', { spacing: isLast ? options.bodySpacing : options.appearanceSpacing }));
   }
 
   for (let i = 0; i < ORDER_SPACE_LINES; i++) {

@@ -162,6 +162,10 @@ const optsSpacing = { ...opts, appearanceSpacing: '1.5', bodySpacing: '2.0' };
 const ss = buildSheets(parsed.cases, optsSpacing)[0];
 check('opt: appearance spacing applied', ss.paragraphs.find((p) => p.text === 'Present  :\t').spacing === '1.5');
 check('opt: body spacing applied to order space', ss.paragraphs.some((p) => p.text === '' && p.spacing === '2.0'));
+// The last appearance blank takes the BODY spacing so the gap between the
+// appearance block and the first order line matches the order-text gaps.
+const presentIdx = ss.paragraphs.findIndex((p) => p.text === 'Present  :\t');
+check('opt: appearance->body transition uses body spacing', ss.paragraphs[presentIdx + 1].spacing === '2.0');
 
 // Location duplication guard
 const optsDupLoc = { ...opts, courtName: 'RADC, New Delhi' };
