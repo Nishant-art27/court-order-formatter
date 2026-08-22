@@ -45,7 +45,8 @@ export function generateOdtContentXml(sheets) {
       const paraProps = [
         'fo:margin-top="0cm" fo:margin-bottom="0cm"',
         `fo:line-height="${LINE_MAP[p.spacing] || '100%'}"`,
-        p.align === 'right' ? 'fo:text-align="end" style:justify-single-word="false"' : '',
+        p.align === 'right' ? 'fo:text-align="end" style:justify-single-word="false"'
+          : p.align === 'both' ? 'fo:text-align="justify" style:justify-single-word="false"' : '',
         p.breakBefore ? 'fo:break-before="page"' : '',
       ].filter(Boolean).join(' ');
       const textProps = `style:font-name="${PAGE.fontFamily}" fo:font-family="'${PAGE.fontFamily}'" fo:font-size="${PAGE.fontSizePt}pt"${p.bold ? ' fo:font-weight="bold"' : ''}`;

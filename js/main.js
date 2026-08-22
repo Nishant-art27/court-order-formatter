@@ -334,7 +334,7 @@ function renderPreview() {
       for (const p of sheet.paragraphs) {
         const div = document.createElement('div');
         div.className = 'sheet-para'
-          + (p.align === 'right' ? ' align-right' : '')
+          + (p.align === 'right' ? ' align-right' : p.align === 'both' ? ' align-justify' : '')
           + (p.bold ? ' bold' : '')
           + (p.spacing === '1.5' ? ' sp-15' : p.spacing === '2.0' ? ' sp-20' : '');
         div.textContent = (p.text || '') + ' '.repeat(p.trailing || 0);

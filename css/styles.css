@@ -304,6 +304,7 @@ body {
 }
 .sheet-para { white-space: pre-wrap; min-height: 1.35em; line-height: 1.35; word-break: break-word; }
 .sheet-para.align-right { text-align: right; }
+.sheet-para.align-justify { text-align: justify; }
 .sheet-para.bold { font-weight: bold; }
 .sheet-para.sp-15 { line-height: 2; }
 .sheet-para.sp-20 { line-height: 2.7; }

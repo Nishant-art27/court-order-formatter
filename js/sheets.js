@@ -66,18 +66,20 @@ export function buildSheet(caseEntry, options, isFirst) {
   // "Present  :" (two spaces before the colon) then a tab, so the appearance
   // ("Mr. Vishal, AR for applicant.") is typed at the first tab stop,
   // matching the physical order sheets.
-  paragraphs.push(para('Present  :\t', { spacing: options.appearanceSpacing }));
+  // The appearance + body paragraphs use justified alignment so that any text
+  // the user types later in the generated document is automatically justified.
+  paragraphs.push(para('Present  :\t', { spacing: options.appearanceSpacing, align: 'both' }));
   // LibreOffice renders a line's extra spacing BELOW it, so the gap between
   // the appearance block and the first order line is set by the LAST
   // appearance blank — it takes the body spacing so that transition gap
   // matches the order-text gaps.
   for (let i = 0; i < APPEARANCE_BLANK_LINES; i++) {
     const isLast = i === APPEARANCE_BLANK_LINES - 1;
-    paragraphs.push(para('', { spacing: isLast ? options.bodySpacing : options.appearanceSpacing }));
+    paragraphs.push(para('', { spacing: isLast ? options.bodySpacing : options.appearanceSpacing, align: 'both' }));
   }
 
   for (let i = 0; i < ORDER_SPACE_LINES; i++) {
-    paragraphs.push(para('', { spacing: options.bodySpacing }));
+    paragraphs.push(para('', { spacing: options.bodySpacing, align: 'both' }));
   }
 
   const stampLines = buildStampLines(options);

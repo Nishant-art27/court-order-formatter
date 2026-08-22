@@ -30,6 +30,7 @@ function paragraphXml(p) {
   const pPr = [];
   if (p.breakBefore) pPr.push('<w:pageBreakBefore/>');
   if (p.align === 'right') pPr.push('<w:jc w:val="right"/>');
+  else if (p.align === 'both') pPr.push('<w:jc w:val="both"/>');
   pPr.push(`<w:spacing w:before="0" w:after="0" w:line="${LINE_MAP[p.spacing] || 240}" w:lineRule="auto"/>`);
   pPr.push(`<w:rPr>${runProps(p.bold)}</w:rPr>`);
 
