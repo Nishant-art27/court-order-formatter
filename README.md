@@ -71,8 +71,34 @@ Present  :   ← tab stop where the appearance is typed
                                         13.08.2026
 ```
 
+## Access lock
+
+The site is gated behind a passkey (default: `courtsplit`). The gate is
+implemented entirely in the browser — [js/lock.js](js/lock.js) shows the lock
+screen, compares a salted SHA-256 hash of what was typed against the stored
+hash, and only then imports `js/main.js`. A correct passkey is remembered in
+`localStorage` for that browser, so it is asked once per device; the **🔒 Lock**
+button in the header forgets it and re-locks the page. After 5 wrong attempts
+the form pauses for 30 seconds.
+
+There is no backend, so treat this as a deterrent rather than real security:
+anyone who can read the JavaScript can bypass it. Do not put anything secret
+behind it.
+
+To change the passkey, compute the new hash and paste it into `PASSKEY_HASH`
+in [js/lock.js](js/lock.js):
+
+```bash
+node -e "const c=require('crypto');console.log(c.createHash('sha256').update('court-order-formatter/v1:'+process.argv[1]).digest('hex'))" 'new-passkey-here'
+```
+
+Changing the hash automatically re-locks every browser that had unlocked the
+old passkey. The gate needs `crypto.subtle`, which is available on `https://`
+and on `localhost` (both Vercel and `npm start` qualify).
+
 ## Configuration
 
+- **Access passkey**: `PASSKEY_HASH` in [js/lock.js](js/lock.js) — see *Access lock* above.
 - **PDF splitter link**: set `PDF_SPLITTER_URL` in [js/config.js](js/config.js).
 - Defaults (judge profile, stamp locations, blank-line counts, page metrics)
   are also in [js/config.js](js/config.js).
@@ -80,6 +106,7 @@ Present  :   ← tab stop where the appearance is typed
 ## Architecture
 
 ```
+js/lock.js                     ← passkey gate; imports main.js after unlock
 UI (index.html + js/main.js)   ← upload, options, profiles, preview, downloads
         │
 js/docread.js     .docx/.odt (zip+XML) → plain-text paragraphs

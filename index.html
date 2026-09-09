@@ -7,7 +7,26 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📄</text></svg>">
 <link rel="stylesheet" href="css/styles.css">
 </head>
-<body>
+<body class="is-locked">
+
+<!-- ============================ ACCESS LOCK ============================ -->
+<div id="lock-screen" class="lock-screen" role="dialog" aria-modal="true" aria-labelledby="lock-title">
+  <form id="lock-form" class="lock-card" autocomplete="off" novalidate>
+    <div class="lock-icon">🔒</div>
+    <h1 id="lock-title">Order Formatter</h1>
+    <p class="lock-sub">This tool is restricted. Enter the access passkey to continue.</p>
+    <label class="field" for="lock-input">
+      <span class="field-label">🔑 Passkey</span>
+    </label>
+    <div class="lock-input-row">
+      <input type="password" id="lock-input" placeholder="Enter passkey" autocomplete="current-password" spellcheck="false" autofocus>
+      <button type="button" id="lock-toggle" class="btn btn-ghost lock-toggle" aria-label="Show passkey">👁️</button>
+    </div>
+    <p id="lock-error" class="lock-error" role="alert" hidden></p>
+    <button type="submit" id="lock-submit" class="btn btn-primary lock-submit">Unlock</button>
+    <p class="lock-foot">Don&rsquo;t have the passkey? <a href="mailto:mnishant2173@gmail.com">Contact Admin</a></p>
+  </form>
+</div>
 
 <header class="app-header">
   <div class="app-header-inner">
@@ -18,13 +37,16 @@
         <p class="tagline">Cause list in &mdash; compiled order sheets out. ADJ / DJ Court edition.</p>
       </div>
     </div>
-    <a class="contact-admin" href="mailto:mnishant2173@gmail.com" title="Email the admin">
-      <span class="contact-admin-icon">✉️</span>
-      <span>
-        <span class="contact-admin-label">Contact Admin</span>
-        <span class="contact-admin-email">mnishant2173@gmail.com</span>
-      </span>
-    </a>
+    <div class="header-actions">
+      <a class="contact-admin" href="mailto:mnishant2173@gmail.com" title="Email the admin">
+        <span class="contact-admin-icon">✉️</span>
+        <span>
+          <span class="contact-admin-label">Contact Admin</span>
+          <span class="contact-admin-email">mnishant2173@gmail.com</span>
+        </span>
+      </a>
+      <button id="btn-lock" class="btn btn-ghost btn-lock" type="button" title="Lock this tool and ask for the passkey again">🔒 Lock</button>
+    </div>
   </div>
 </header>
 
@@ -305,6 +327,6 @@
 
 <div id="toast" class="toast" hidden></div>
 
-<script type="module" src="js/main.js"></script>
+<script type="module" src="js/lock.js"></script>
 </body>
 </html>
