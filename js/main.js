@@ -28,6 +28,9 @@ const state = {
 
 const $ = (id) => document.getElementById(id);
 
+// Stage colour: the n-th stage in the list gets the n-th tone (5 tones, cycling).
+const toneClass = (index) => `tone-${((index % 5) + 5) % 5}`;
+
 // ---------------------------------------------------------------------------
 // Toast + errors
 
@@ -91,7 +94,7 @@ function removeFile() {
   state.fileKind = '';
   state.fileSize = 0;
   state.parsed = null;
-  $('file-summary').hidden = true;
+  renderFileSummary();
   $('file-input').value = '';
   showUploadError('');
   renderAll();
@@ -101,16 +104,10 @@ function removeFile() {
 function renderFileSummary() {
   const p = state.parsed;
   $('file-summary').hidden = !p;
+  $('dropzone').hidden = !!p;
   if (!p) return;
   $('fs-name').textContent = state.fileName;
-  $('fs-meta').textContent = `${state.fileKind.toUpperCase()} · ${(state.fileSize / 1024).toFixed(0)} KB`;
-  $('fs-court').textContent = p.header.rawLines.join(' — ') || '—';
-  $('fs-judge').textContent = [p.header.judge, p.header.designation].filter(Boolean).join(', ') || '—';
-  $('fs-date').textContent = p.header.date ? formatDateDots(p.header.date) : (p.header.dateRaw || 'not found');
-  $('fs-count').textContent = p.header.totalDeclared !== null
-    ? `${p.cases.length} parsed / ${p.header.totalDeclared} declared`
-    : `${p.cases.length} parsed`;
-  $('fs-stages').textContent = p.stages.length ? p.stages.join(' · ') : '—';
+  $('fs-meta').textContent = `${state.fileKind.toUpperCase()} · ${(state.fileSize / 1024).toFixed(0)} KB · ${p.cases.length} case${p.cases.length === 1 ? '' : 's'}`;
 
   const warnEl = $('parse-warnings');
   if (p.warnings.length) {
@@ -251,15 +248,19 @@ function renderProfiles() {
     const chip = document.createElement('span');
     chip.className = `profile-chip${isDefault ? ' is-default' : ''}`;
     const load = document.createElement('button');
+    load.type = 'button';
     load.className = 'chip-load';
-    load.textContent = `${isDefault ? '★ ' : ''}${profile.name} — ${profile.designation}`;
+    load.innerHTML = `${isDefault ? '<svg class="ic"><use href="#i-star"/></svg>' : ''}<span class="chip-name"></span><em class="chip-role"></em>`;
+    load.querySelector('.chip-name').textContent = profile.name;
+    load.querySelector('.chip-role').textContent = profile.designation;
     load.title = `Load: ${profile.name}, ${profile.designation}, ${profile.court}`;
     load.addEventListener('click', () => applyProfile(profile));
     chip.appendChild(load);
     if (!isDefault) {
       const del = document.createElement('button');
+      del.type = 'button';
       del.className = 'chip-del';
-      del.textContent = '✕';
+      del.innerHTML = '<svg class="ic"><use href="#i-x"/></svg>';
       del.title = 'Delete this profile';
       del.addEventListener('click', () => deleteProfile(index));
       chip.appendChild(del);
@@ -279,10 +280,11 @@ function renderLocations() {
   row.innerHTML = '';
   for (const loc of STAMP_LOCATIONS) {
     const btn = document.createElement('button');
-    btn.className = `choice-card${state.options.stampLocation === loc ? ' is-selected' : ''}`;
-    btn.innerHTML = `<strong></strong><span></span>`;
-    btn.querySelector('strong').textContent = loc;
-    btn.querySelector('span').textContent = `Include "${loc}"`;
+    const selected = state.options.stampLocation === loc;
+    btn.type = 'button';
+    btn.className = `pill${selected ? ' is-selected' : ''}`;
+    btn.setAttribute('aria-pressed', String(selected));
+    btn.textContent = loc;
     btn.addEventListener('click', () => {
       state.options.stampLocation = loc;
       renderLocations();
@@ -313,7 +315,9 @@ function renderPreview() {
   $('preview-cases').hidden = !has || state.previewTab !== 'cases';
   $('tab-paper').classList.toggle('is-active', state.previewTab === 'paper');
   $('tab-cases').classList.toggle('is-active', state.previewTab === 'cases');
-  $('tab-cases').textContent = has ? `🗂️ Parsed Cases (${state.parsed.cases.length})` : '🗂️ Parsed Cases';
+  const count = $('tab-cases-count');
+  count.hidden = !has;
+  if (has) count.textContent = String(state.parsed.cases.length);
   if (!has) return;
 
   if (state.previewTab === 'paper') {
@@ -343,16 +347,44 @@ function renderPreview() {
       wrap.appendChild(page);
     }
   } else {
-    const tbody = $('cases-tbody');
-    tbody.innerHTML = '';
+    const list = $('cases-list');
+    list.innerHTML = '';
     for (const c of currentCases()) {
-      const tr = document.createElement('tr');
-      for (const value of [c.serial, c.caseId || '—', c.cnr || '—', c.title, c.stage || '—']) {
-        const td = document.createElement('td');
-        td.textContent = value;
-        tr.appendChild(td);
+      const row = document.createElement('div');
+      row.className = 'case-row';
+
+      const no = document.createElement('span');
+      no.className = 'case-no';
+      no.textContent = c.serial;
+
+      const main = document.createElement('div');
+      main.className = 'case-main';
+      const line = document.createElement('div');
+      line.className = 'case-line';
+      const id = document.createElement('strong');
+      id.className = 'case-id';
+      id.textContent = c.caseId || '—';
+      line.appendChild(id);
+      if (c.stage) {
+        const stage = document.createElement('span');
+        stage.className = `case-stage ${toneClass(state.parsed.stages.indexOf(c.stage))}`;
+        stage.textContent = c.stage;
+        stage.title = c.stage;
+        line.appendChild(stage);
       }
-      tbody.appendChild(tr);
+      const title = document.createElement('div');
+      title.className = 'case-title';
+      title.textContent = c.title;
+      main.append(line, title);
+      if (c.cnr) {
+        const cnr = document.createElement('div');
+        cnr.className = 'case-cnr';
+        cnr.textContent = `CNR ${c.cnr}`;
+        main.appendChild(cnr);
+      }
+
+      row.append(no, main);
+      list.appendChild(row);
     }
   }
 }
@@ -362,15 +394,20 @@ function renderGenerateStatus() {
   const ready = state.parsed && state.parsed.cases.length > 0 && !!state.options.causeListDate;
   $('btn-dl-docx').disabled = !ready;
   $('btn-dl-odt').disabled = !ready;
+  const dot = $('status-dot');
   if (!state.parsed) {
-    status.textContent = 'Upload a cause list to enable generation.';
+    dot.dataset.state = 'empty';
+    status.textContent = 'Upload a cause list to get started.';
   } else if (!state.options.causeListDate) {
-    status.textContent = 'Select the cause list date above to enable generation.';
+    dot.dataset.state = 'warn';
+    status.textContent = 'Set the cause list date to enable downloads.';
   } else {
-    let text = `Ready: ${state.parsed.cases.length} order sheets · dated ${formatDateDots(state.options.causeListDate)} · stamp of ${state.options.judgeName || '—'}.`;
+    dot.dataset.state = 'ready';
+    const n = state.parsed.cases.length;
+    let text = `${n} sheet${n === 1 ? '' : 's'} · dated ${formatDateDots(state.options.causeListDate)} · stamp of ${state.options.judgeName.trim() || '—'}`;
     if (state.cnr) {
       const { matched } = attachCnrs(state.parsed.cases, state.cnr.map);
-      text += ` CNR No. on ${matched} of ${state.parsed.cases.length} sheets.`;
+      text += ` · CNR No. on ${matched} of ${n}`;
     }
     status.textContent = text;
   }
@@ -381,9 +418,70 @@ function renderDateHint() {
     ? formatDateDots(state.options.causeListDate) : '—';
 }
 
+// Parsed-file details in the inspector, with parsed/declared and CNR-match bars.
+function renderInfo() {
+  const p = state.parsed;
+  $('file-info').hidden = !p;
+  if (!p) return;
+  $('fs-court').textContent = p.header.rawLines.join(' — ') || '—';
+  $('fs-judge').textContent = [p.header.judge, p.header.designation].filter(Boolean).join(', ') || '—';
+  $('fs-date').textContent = p.header.date ? formatDateDots(p.header.date) : (p.header.dateRaw || 'not found');
+  const stagesEl = $('fs-stages');
+  stagesEl.innerHTML = '';
+  if (p.stages.length) {
+    p.stages.forEach((stage, i) => {
+      const chip = document.createElement('span');
+      chip.className = `stage-chip ${toneClass(i)}`;
+      chip.textContent = stage;
+      stagesEl.appendChild(chip);
+    });
+  } else {
+    stagesEl.textContent = '—';
+  }
+
+  const declared = p.header.totalDeclared;
+  const short = declared !== null && p.cases.length < declared;
+  $('fs-count').textContent = declared !== null ? `${p.cases.length} of ${declared} declared` : `${p.cases.length} parsed`;
+  const countBar = $('fs-count-bar');
+  countBar.style.width = `${declared ? Math.min(100, Math.round((p.cases.length / declared) * 100)) : 100}%`;
+  countBar.classList.toggle('is-short', short);
+
+  $('fs-cnr-row').hidden = !state.cnr;
+  if (state.cnr) {
+    const { matched } = attachCnrs(p.cases, state.cnr.map);
+    $('fs-cnr').textContent = `${matched} of ${p.cases.length} cases`;
+    $('fs-cnr-bar').style.width = `${p.cases.length ? Math.round((matched / p.cases.length) * 100) : 0}%`;
+  }
+}
+
+// Sidebar captions summarise each section's state at a glance.
+function renderNav() {
+  const source = $('nav-source-caption');
+  if (state.parsed) {
+    source.textContent = `${state.parsed.cases.length} cases · ${state.fileName}`;
+    source.classList.add('is-good');
+  } else {
+    source.textContent = 'No file yet';
+    source.classList.remove('is-good');
+  }
+
+  const judge = $('nav-judge-caption');
+  const name = state.options.judgeName.trim();
+  const date = state.options.causeListDate;
+  if (name && date) {
+    judge.textContent = `${name} · ${formatDateDots(date)}`;
+    judge.classList.add('is-good');
+  } else {
+    judge.textContent = !name ? 'Judge name missing' : 'Date not set';
+    judge.classList.remove('is-good');
+  }
+}
+
 function renderAll() {
   renderDateHint();
   renderCnrSummary();
+  renderInfo();
+  renderNav();
   renderPreview();
   renderGenerateStatus();
 }
@@ -468,6 +566,37 @@ function bindSegmented(containerId) {
   });
 }
 
+function initNav() {
+  const items = [...document.querySelectorAll('.nav-item[data-section]')];
+  const sections = items.map((a) => $(a.dataset.section));
+  const setActive = (index) => items.forEach((a, i) => a.classList.toggle('is-active', i === index));
+
+  let holdUntil = 0;
+  items.forEach((a, i) => a.addEventListener('click', (e) => {
+    e.preventDefault();
+    setActive(i);
+    holdUntil = Date.now() + 900; // keep the clicked item lit while the smooth scroll runs
+    sections[i].scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }));
+
+  const ws = $('workspace');
+  const spy = () => {
+    if (Date.now() < holdUntil) return;
+    // The workspace column scrolls on wide layouts; the page scrolls when stacked.
+    const columnScroll = ws.scrollHeight > ws.clientHeight + 1;
+    const sc = columnScroll ? ws : document.scrollingElement;
+    const atBottom = sc.scrollTop > 0 && sc.scrollTop + sc.clientHeight >= sc.scrollHeight - 2;
+    const threshold = Math.max(ws.getBoundingClientRect().top, 0) + 140;
+    let active = 0;
+    sections.forEach((s, i) => { if (s.getBoundingClientRect().top <= threshold) active = i; });
+    setActive(atBottom ? sections.length - 1 : active);
+  };
+  ws.addEventListener('scroll', spy, { passive: true });
+  window.addEventListener('scroll', spy, { passive: true });
+  window.addEventListener('resize', spy);
+  spy();
+}
+
 function init() {
   // Dropzone
   const dz = $('dropzone');
@@ -486,6 +615,7 @@ function init() {
     fileInput.value = '';
   });
   $('btn-remove-file').addEventListener('click', removeFile);
+  $('btn-replace-file').addEventListener('click', () => fileInput.click());
 
   // CNR lookup dropzone
   const cnrDz = $('cnr-dropzone');
@@ -532,13 +662,14 @@ function init() {
   });
   bindToggle('opt-indices', 'includeIndices');
 
-  // Generate + sidebar
+  // Export bar + inspector
   $('btn-dl-docx').addEventListener('click', downloadDocx);
   $('btn-dl-odt').addEventListener('click', downloadOdt);
   $('tab-paper').addEventListener('click', () => { state.previewTab = 'paper'; renderPreview(); });
   $('tab-cases').addEventListener('click', () => { state.previewTab = 'cases'; renderPreview(); });
   $('pdf-splitter-link').href = PDF_SPLITTER_URL;
 
+  initNav();
   renderAll();
 }
 

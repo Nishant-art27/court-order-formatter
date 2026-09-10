@@ -147,7 +147,7 @@ function bindVisibilityToggle() {
   toggle.addEventListener('click', () => {
     const show = input.type === 'password';
     input.type = show ? 'text' : 'password';
-    toggle.textContent = show ? '🙈' : '👁️';
+    toggle.classList.toggle('is-revealed', show);
     toggle.setAttribute('aria-label', show ? 'Hide passkey' : 'Show passkey');
     input.focus();
   });

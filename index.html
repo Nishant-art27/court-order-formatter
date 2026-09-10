@@ -3,327 +3,375 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
 <title>Order Formatter — ADJ/DJ Court</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📄</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%23171f1a'/><path d='M16 7v18M9 11h14M11 11l-3 7a3 3 0 0 0 6 0zM21 11l-3 7a3 3 0 0 0 6 0zM12 25h8' fill='none' stroke='white' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400..700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/styles.css">
 </head>
 <body class="is-locked">
 
+<!-- Icon sprite (hand-drawn 24px line icons; referenced with <use href="#i-…">) -->
+<svg hidden aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="i-scale" viewBox="0 0 24 24"><path d="M12 3v18"/><path d="M5 7h14"/><path d="m7 7-3 7a3 3 0 0 0 6 0z"/><path d="m17 7-3 7a3 3 0 0 0 6 0z"/><path d="M8 21h8"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></symbol>
+  <symbol id="i-file-text" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6"/><path d="M9 17h6"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></symbol>
+  <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 7h9"/><path d="M17 7h3"/><circle cx="15" cy="7" r="2"/><path d="M4 17h3"/><path d="M11 17h9"/><circle cx="9" cy="17" r="2"/></symbol>
+  <symbol id="i-scissors" viewBox="0 0 24 24"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M20 4 8.1 15.9"/><path d="M14.5 14.5 20 20"/><path d="M8.1 8.1 12 12"/></symbol>
+  <symbol id="i-external" viewBox="0 0 24 24"><path d="M14 4h6v6"/><path d="M20 4 10 14"/><path d="M19 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h5"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/><path d="m9 12 2 2 4-4"/></symbol>
+  <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 3v12"/><path d="m7 8 5-5 5 5"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 5 5L20 7"/></symbol>
+  <symbol id="i-table" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18"/><path d="M9 10v10"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 3 2.8 5.9 6.2.8-4.5 4.4 1.1 6.3L12 17.5 6.4 20.4l1.1-6.3L3 9.7l6.2-.8z"/></symbol>
+  <symbol id="i-bookmark" viewBox="0 0 24 24"><path d="M19 21 12 16l-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-eye-off" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/><path d="m3 3 18 18"/></symbol>
+  <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+</svg>
+
 <!-- ============================ ACCESS LOCK ============================ -->
 <div id="lock-screen" class="lock-screen" role="dialog" aria-modal="true" aria-labelledby="lock-title">
   <form id="lock-form" class="lock-card" autocomplete="off" novalidate>
-    <div class="lock-icon">🔒</div>
+    <div class="lock-mark"><svg class="ic"><use href="#i-lock"/></svg></div>
     <h1 id="lock-title">Order Formatter</h1>
-    <p class="lock-sub">This tool is restricted. Enter the access passkey to continue.</p>
-    <label class="field" for="lock-input">
-      <span class="field-label">🔑 Passkey</span>
-    </label>
+    <p class="lock-sub">Enter the access passkey to continue.</p>
+    <label class="lock-label" for="lock-input">Passkey</label>
     <div class="lock-input-row">
       <input type="password" id="lock-input" placeholder="Enter passkey" autocomplete="current-password" spellcheck="false" autofocus>
-      <button type="button" id="lock-toggle" class="btn btn-ghost lock-toggle" aria-label="Show passkey">👁️</button>
+      <button type="button" id="lock-toggle" class="icon-btn" aria-label="Show passkey">
+        <svg class="ic ic-eye"><use href="#i-eye"/></svg>
+        <svg class="ic ic-eye-off"><use href="#i-eye-off"/></svg>
+      </button>
     </div>
     <p id="lock-error" class="lock-error" role="alert" hidden></p>
-    <button type="submit" id="lock-submit" class="btn btn-primary lock-submit">Unlock</button>
-    <p class="lock-foot">Don&rsquo;t have the passkey? <a href="mailto:mnishant2173@gmail.com">Contact Admin</a></p>
+    <button type="submit" id="lock-submit" class="btn btn-primary btn-block">Unlock</button>
+    <p class="lock-foot">Don&rsquo;t have the passkey? <a href="mailto:mnishant2173@gmail.com">Contact admin</a></p>
   </form>
 </div>
 
-<header class="app-header">
-  <div class="app-header-inner">
+<!-- ============================ APP ============================ -->
+<div class="app">
+
+  <!-- Sidebar: brand, section navigation, tools, footer -->
+  <aside class="sidebar">
     <div class="brand">
-      <span class="brand-icon">⚖️</span>
+      <span class="brand-mark"><svg class="ic"><use href="#i-scale"/></svg></span>
       <div>
-        <h1>Order Formatter</h1>
-        <p class="tagline">Cause list in &mdash; compiled order sheets out. ADJ / DJ Court edition.</p>
+        <strong>Order Formatter</strong>
+        <span>ADJ / DJ Court</span>
       </div>
     </div>
-    <div class="header-actions">
-      <a class="contact-admin" href="mailto:mnishant2173@gmail.com" title="Email the admin">
-        <span class="contact-admin-icon">✉️</span>
-        <span>
-          <span class="contact-admin-label">Contact Admin</span>
-          <span class="contact-admin-email">mnishant2173@gmail.com</span>
+
+    <nav class="nav" aria-label="Workflow">
+      <p class="nav-heading">Workflow</p>
+      <a class="nav-item is-active" href="#sec-source" data-section="sec-source">
+        <span class="nav-icon"><svg class="ic"><use href="#i-file-text"/></svg></span>
+        <span class="nav-text">
+          <span class="nav-title">Cause list</span>
+          <span class="nav-caption" id="nav-source-caption">No file yet</span>
         </span>
       </a>
-      <button id="btn-lock" class="btn btn-ghost btn-lock" type="button" title="Lock this tool and ask for the passkey again">🔒 Lock</button>
+      <a class="nav-item" href="#sec-judge" data-section="sec-judge">
+        <span class="nav-icon"><svg class="ic"><use href="#i-user"/></svg></span>
+        <span class="nav-text">
+          <span class="nav-title">Judge &amp; stamp</span>
+          <span class="nav-caption" id="nav-judge-caption">Name, court, date</span>
+        </span>
+      </a>
+      <a class="nav-item" href="#sec-format" data-section="sec-format">
+        <span class="nav-icon"><svg class="ic"><use href="#i-sliders"/></svg></span>
+        <span class="nav-text">
+          <span class="nav-title">Formatting</span>
+          <span class="nav-caption">Emphasis &amp; spacing</span>
+        </span>
+      </a>
+    </nav>
+
+    <nav class="nav" aria-label="Tools">
+      <p class="nav-heading">Tools</p>
+      <a class="nav-item" id="pdf-splitter-link" href="#" target="_blank" rel="noopener">
+        <span class="nav-icon"><svg class="ic"><use href="#i-scissors"/></svg></span>
+        <span class="nav-text">
+          <span class="nav-title">Split PDF</span>
+          <span class="nav-caption">Companion tool</span>
+        </span>
+        <svg class="ic ic-trail"><use href="#i-external"/></svg>
+      </a>
+    </nav>
+
+    <div class="sidebar-foot">
+      <p class="privacy"><svg class="ic"><use href="#i-shield"/></svg><span>Files are processed in this browser and never uploaded.</span></p>
+      <a class="nav-item" href="mailto:mnishant2173@gmail.com" title="Email the admin">
+        <span class="nav-icon"><svg class="ic"><use href="#i-mail"/></svg></span>
+        <span class="nav-text">
+          <span class="nav-title">Contact admin</span>
+          <span class="nav-caption">mnishant2173@gmail.com</span>
+        </span>
+      </a>
+      <button id="btn-lock" class="nav-item" type="button" title="Lock this tool and ask for the passkey again">
+        <span class="nav-icon"><svg class="ic"><use href="#i-lock"/></svg></span>
+        <span class="nav-text">
+          <span class="nav-title">Lock</span>
+          <span class="nav-caption">Ask for the passkey again</span>
+        </span>
+      </button>
     </div>
-  </div>
-</header>
+  </aside>
 
-<main class="layout">
+  <!-- Workspace: sticky export bar + the three sections -->
+  <main class="workspace" id="workspace">
+    <header class="topbar">
+      <div class="topbar-text">
+        <h1>Order sheets</h1>
+        <p class="topbar-status"><span class="status-dot" id="status-dot" data-state="empty"></span><span id="generate-status">Upload a cause list to get started.</span></p>
+      </div>
+      <div class="topbar-actions">
+        <button id="btn-dl-odt" class="btn btn-secondary" type="button" disabled><svg class="ic"><use href="#i-download"/></svg>.odt</button>
+        <button id="btn-dl-docx" class="btn btn-primary" type="button" disabled><svg class="ic"><use href="#i-download"/></svg>Download .docx</button>
+      </div>
+    </header>
 
-  <!-- ============================ LEFT COLUMN ============================ -->
-  <div class="col-main">
-
-    <!-- 1. UPLOAD -->
-    <section class="card">
-      <h2 class="card-title"><span class="card-icon">📄</span> 1. Upload Source Cause List (.docx)</h2>
+    <!-- 1. Source -->
+    <section class="panel" id="sec-source">
+      <div class="panel-head">
+        <div>
+          <h2>Cause list</h2>
+          <p>The daily list that becomes one order sheet per case.</p>
+        </div>
+      </div>
 
       <div id="dropzone" class="dropzone" tabindex="0" role="button" aria-label="Upload cause list file">
-        <div class="dropzone-icon">⬆️</div>
-        <p class="dropzone-text">Drag &amp; drop source file, or <span class="linkish">browse files</span></p>
-        <p class="dropzone-formats">SUPPORTED FORMATS: .DOCX, .ODT</p>
-        <span class="dropzone-hint">Upload your cause list file (e.g., nishant.docx)</span>
+        <span class="dz-icon"><svg class="ic"><use href="#i-upload"/></svg></span>
+        <p class="dz-title">Drop the cause list here, or <span class="link">browse</span></p>
+        <p class="dz-sub">.docx or .odt &middot; up to 10 MB</p>
         <input id="file-input" type="file" accept=".docx,.odt" hidden>
       </div>
 
-      <div id="upload-error" class="banner banner-error" hidden></div>
+      <div id="upload-error" class="notice notice-error" hidden></div>
 
-      <div id="file-summary" class="file-summary" hidden>
-        <div class="file-summary-head">
-          <div>
+      <div id="file-summary" class="file-row" hidden>
+        <div class="file-row-main">
+          <span class="file-icon"><svg class="ic"><use href="#i-file-text"/></svg></span>
+          <div class="file-text">
             <strong id="fs-name"></strong>
-            <span id="fs-meta" class="muted"></span>
+            <span id="fs-meta"></span>
           </div>
-          <button id="btn-remove-file" class="btn btn-ghost btn-small">✕ Remove</button>
-        </div>
-        <dl class="fs-grid">
-          <div><dt>Court header</dt><dd id="fs-court"></dd></div>
-          <div><dt>In the court of</dt><dd id="fs-judge"></dd></div>
-          <div><dt>List date</dt><dd id="fs-date"></dd></div>
-          <div><dt>Cases parsed</dt><dd id="fs-count"></dd></div>
-          <div class="fs-span"><dt>Stages</dt><dd id="fs-stages"></dd></div>
-        </dl>
-        <div id="parse-warnings" class="banner banner-warn" hidden></div>
-      </div>
-
-      <div class="cnr-divider"></div>
-
-      <h3 class="cnr-title">🔎 Upload CNR Lookup Table <span class="muted-inline">(Optional)</span></h3>
-      <div id="cnr-dropzone" class="dropzone dropzone-compact" tabindex="0" role="button" aria-label="Upload CNR lookup file">
-        <p class="dropzone-text">Click to select <span class="linkish">cnr.odt / cnr.docx</span>, or drag &amp; drop</p>
-        <p class="dropzone-sub">If uploaded, the CNR No. is automatically inserted for matching cases</p>
-        <input id="cnr-file-input" type="file" accept=".docx,.odt" hidden>
-      </div>
-
-      <div id="cnr-error" class="banner banner-error" hidden></div>
-
-      <div id="cnr-summary" class="file-summary" hidden>
-        <div class="file-summary-head">
-          <div>
-            <strong id="cnr-name"></strong>
-            <span id="cnr-meta" class="muted"></span>
+          <div class="file-actions">
+            <button id="btn-replace-file" class="btn btn-ghost btn-sm" type="button">Replace</button>
+            <button id="btn-remove-file" class="icon-btn" type="button" aria-label="Remove file" title="Remove file"><svg class="ic"><use href="#i-x"/></svg></button>
           </div>
-          <button id="btn-remove-cnr" class="btn btn-ghost btn-small">✕ Remove</button>
         </div>
-        <p id="cnr-match-info" class="muted cnr-match-info"></p>
-      </div>
-    </section>
-
-    <!-- 2. DETAILS -->
-    <section class="card">
-      <h2 class="card-title"><span class="card-icon">📝</span> 2. Details</h2>
-
-      <p class="group-label">Court Jurisdiction Type</p>
-      <div class="choice-row">
-        <button class="choice-card" disabled title="Not available in this edition">
-          <strong>JMFC</strong>
-          <span>Judicial Magistrate First Class</span>
-          <em class="soon">Not available</em>
-        </button>
-        <button class="choice-card is-selected" id="choice-adj">
-          <strong>ADJ / DJ Court</strong>
-          <span>Additional District / Sessions Judge</span>
-        </button>
+        <div id="parse-warnings" class="notice notice-warn" hidden></div>
       </div>
 
-      <div class="toggle-block">
-        <div>
-          <p class="toggle-title">Right-Align Case Details</p>
-          <p class="toggle-sub">Right-aligns case number and litigant titles on each generated page</p>
+      <div class="subpanel">
+        <div class="subpanel-head">
+          <h3>CNR lookup <span class="tag">Optional</span></h3>
+          <p>Prints the CNR No. under the title of every matching case.</p>
         </div>
-        <label class="switch"><input type="checkbox" id="opt-right-align"><span class="slider"></span></label>
-      </div>
-
-      <p class="group-label">Signature / Stamp Style</p>
-      <div class="choice-row">
-        <button class="choice-card is-selected" id="choice-classic">
-          <strong>Classic Stamp</strong>
-          <span>(Name), Designation, Court &amp; Location, Date</span>
-        </button>
-        <button class="choice-card" disabled title="Not available in this edition">
-          <strong>Designation Stamp</strong>
-          <span>Right-aligned: (Name) \n Designation \n Court Name</span>
-          <em class="soon">Not available</em>
-        </button>
-      </div>
-
-      <div class="judge-grid">
-        <label class="field">
-          <span class="field-label">👤 Judge Name</span>
-          <input type="text" id="opt-judge-name" placeholder="Enter Sh. / Ms. Judge Name">
-        </label>
-        <label class="field">
-          <span class="field-label">🏷️ Judge Designation / Post</span>
-          <input type="text" id="opt-judge-designation" placeholder="Enter designation (e.g. ASJ-04)">
-        </label>
-        <label class="field">
-          <span class="field-label">📍 Court Name</span>
-          <input type="text" id="opt-court-name" placeholder="Enter court name">
-        </label>
-      </div>
-      <div class="btn-row btn-row-right">
-        <button id="btn-save-profile" class="btn btn-secondary">💾 Save Judge Details</button>
-      </div>
-
-      <p class="group-label">Saved Judge Profiles <span class="muted-inline">— click to load</span></p>
-      <div id="profile-list" class="profile-list"></div>
-
-      <p class="group-label">Stamp Location</p>
-      <div id="location-row" class="choice-row choice-row-4"></div>
-
-      <div class="bold-grid">
-        <div class="toggle-block toggle-boxed">
-          <div>
-            <p class="toggle-title">Bold Case Details</p>
-            <p class="toggle-sub">Bold contents above the date (excluding date)</p>
-          </div>
-          <label class="switch"><input type="checkbox" id="opt-bold-case"><span class="slider"></span></label>
+        <div id="cnr-dropzone" class="dropzone dropzone-inline" tabindex="0" role="button" aria-label="Upload CNR lookup file">
+          <svg class="ic"><use href="#i-table"/></svg>
+          <span>Add <span class="link">cnr.docx / cnr.odt</span>, or drop it here</span>
+          <input id="cnr-file-input" type="file" accept=".docx,.odt" hidden>
         </div>
-        <div class="toggle-block toggle-boxed">
-          <div>
-            <p class="toggle-title">Bold Date Portion</p>
-            <p class="toggle-sub">Keep cause date bold in output</p>
-          </div>
-          <label class="switch"><input type="checkbox" id="opt-bold-date" checked><span class="slider"></span></label>
-        </div>
-        <div class="toggle-block toggle-boxed">
-          <div>
-            <p class="toggle-title">Bold Stamp Portion</p>
-            <p class="toggle-sub">Keep entire sign-off stamp bold</p>
-          </div>
-          <label class="switch"><input type="checkbox" id="opt-bold-stamp" checked><span class="slider"></span></label>
-        </div>
-      </div>
-
-      <p class="group-label">✨ Advanced Layout &amp; Spacing Settings</p>
-      <div class="spacing-grid">
-        <div>
-          <p class="toggle-title">Appearance Section Spacing <span class="muted-inline">(after Present)</span></p>
-          <div class="segmented" id="seg-appearance" data-opt="appearanceSpacing">
-            <button data-value="1.0" class="is-selected">1.0</button>
-            <button data-value="1.5">1.5</button>
-            <button data-value="2.0">2.0</button>
-          </div>
-          <p class="toggle-sub">Controls line spacing for the counsel presence block</p>
-        </div>
-        <div>
-          <p class="toggle-title">Body Section Spacing <span class="muted-inline">(Order Text)</span></p>
-          <div class="segmented" id="seg-body" data-opt="bodySpacing">
-            <button data-value="1.0" class="is-selected">1.0</button>
-            <button data-value="1.5">1.5</button>
-            <button data-value="2.0">2.0</button>
-          </div>
-          <p class="toggle-sub">Controls line spacing for typed order contents</p>
-        </div>
-        <div>
-          <p class="toggle-title">Signature / Stamp Alignment</p>
-          <div class="segmented" id="seg-stamp-align" data-opt="stampAlignment">
-            <button data-value="perfect" class="is-selected">Perfect Right</button>
-            <button data-value="offset">Offset Right (12/4/2/2)</button>
-          </div>
-          <p class="toggle-sub">Offset aligns the judge stamp with trailing spaces (Line 1: 12, Line 2: 4, Lines 3&ndash;4: 2)</p>
-        </div>
-        <div>
-          <div class="toggle-block toggle-plain">
-            <div>
-              <p class="toggle-title">Steno Initials in Stamp Date</p>
-              <p class="toggle-sub">Append the active steno's initials to the cause list date in the classic stamp</p>
+        <div id="cnr-error" class="notice notice-error" hidden></div>
+        <div id="cnr-summary" class="file-row" hidden>
+          <div class="file-row-main">
+            <span class="file-icon"><svg class="ic"><use href="#i-table"/></svg></span>
+            <div class="file-text">
+              <strong id="cnr-name"></strong>
+              <span id="cnr-meta"></span>
             </div>
-            <label class="switch"><input type="checkbox" id="opt-steno"><span class="slider"></span></label>
+            <div class="file-actions">
+              <button id="btn-remove-cnr" class="icon-btn" type="button" aria-label="Remove CNR lookup" title="Remove CNR lookup"><svg class="ic"><use href="#i-x"/></svg></button>
+            </div>
           </div>
-          <label class="field" id="steno-initials-field" hidden>
-            <span class="field-label">Steno initials</span>
-            <input type="text" id="opt-steno-text" placeholder="e.g. NG" maxlength="8">
-          </label>
+          <p id="cnr-match-info" class="file-note"></p>
         </div>
       </div>
+    </section>
 
-      <div class="date-grid">
+    <!-- 2. Judge & stamp -->
+    <section class="panel" id="sec-judge">
+      <div class="panel-head">
         <div>
-          <p class="group-label">🗓️ Select Cause List Date</p>
-          <input type="date" id="opt-date" class="date-input">
-          <p class="odt-format">ODT Target Format: <strong id="odt-format-hint">—</strong></p>
+          <h2>Judge &amp; stamp</h2>
+          <p>Printed at the foot of every sheet as the classic stamp.</p>
         </div>
-        <div class="toggle-block toggle-boxed">
-          <div>
-            <p class="toggle-title">Include Case Indices</p>
-            <p class="toggle-sub">Keeps serial list indexes (e.g. "1.") in output</p>
+        <span class="tag tag-accent">Classic stamp</span>
+      </div>
+
+      <div class="fields-3">
+        <label class="field">
+          <span>Judge name</span>
+          <input type="text" id="opt-judge-name" placeholder="Sh. / Ms. …">
+        </label>
+        <label class="field">
+          <span>Designation</span>
+          <input type="text" id="opt-judge-designation" placeholder="e.g. ASJ-04">
+        </label>
+        <label class="field">
+          <span>Court</span>
+          <input type="text" id="opt-court-name" placeholder="e.g. RADC">
+        </label>
+      </div>
+
+      <div class="fields-2">
+        <div class="field">
+          <span>Stamp location</span>
+          <div id="location-row" class="pills"></div>
+        </div>
+        <label class="field">
+          <span>Cause list date</span>
+          <div class="date-row">
+            <input type="date" id="opt-date">
+            <span class="date-hint">prints as <strong id="odt-format-hint">—</strong></span>
           </div>
-          <label class="switch"><input type="checkbox" id="opt-indices"><span class="slider"></span></label>
+        </label>
+      </div>
+
+      <div class="profiles">
+        <div class="profiles-head">
+          <span>Saved profiles</span>
+          <button id="btn-save-profile" class="btn btn-ghost btn-sm" type="button"><svg class="ic"><use href="#i-bookmark"/></svg>Save current</button>
+        </div>
+        <div id="profile-list" class="chips"></div>
+      </div>
+    </section>
+
+    <!-- 3. Formatting -->
+    <section class="panel" id="sec-format">
+      <div class="panel-head">
+        <div>
+          <h2>Formatting</h2>
+          <p>Emphasis and layout of each sheet. The defaults follow the court&rsquo;s house style.</p>
         </div>
       </div>
-    </section>
 
-    <!-- 3. GENERATE -->
-    <section class="card">
-      <h2 class="card-title"><span class="card-icon">⚙️</span> 3. Generate Order Sheets</h2>
-      <p id="generate-status" class="muted">Upload a cause list to enable generation.</p>
-      <div class="btn-row">
-        <button id="btn-dl-docx" class="btn btn-primary" disabled>⬇️ Download .docx</button>
-        <button id="btn-dl-odt" class="btn btn-primary" disabled>⬇️ Download .odt</button>
-      </div>
-    </section>
-
-  </div>
-
-  <!-- ============================ RIGHT COLUMN ============================ -->
-  <aside class="col-side">
-
-    <section class="card card-companion">
-      <p class="companion-label">✂️ COMPANION UTILITY <span class="dot"></span></p>
-      <h2 class="card-title">Split Court PDF Documents</h2>
-      <p class="muted">Need to split your formatted PDFs into individual sheets or clean subsets? Use this fast, dedicated legal PDF companion tool.</p>
-      <a id="pdf-splitter-link" class="btn btn-splitter" href="#" target="_blank" rel="noopener">✂️ SPLIT PDF INSTANTLY ↗</a>
-    </section>
-
-    <section class="card">
-      <h2 class="card-title"><span class="card-icon">👁️</span> Live Preview</h2>
-      <div class="preview-tabs">
-        <button id="tab-paper" class="btn btn-tab is-active">📄 Paper View</button>
-        <button id="tab-cases" class="btn btn-tab">🗂️ Parsed Cases</button>
+      <div class="settings">
+        <label class="setting">
+          <span class="setting-text"><strong>Right-align case details</strong><span>Case number and party titles sit on the right</span></span>
+          <span class="switch"><input type="checkbox" id="opt-right-align"><span class="slider"></span></span>
+        </label>
+        <label class="setting">
+          <span class="setting-text"><strong>Bold case details</strong><span>Everything above the date</span></span>
+          <span class="switch"><input type="checkbox" id="opt-bold-case"><span class="slider"></span></span>
+        </label>
+        <label class="setting">
+          <span class="setting-text"><strong>Bold date</strong><span>Keep the cause list date bold</span></span>
+          <span class="switch"><input type="checkbox" id="opt-bold-date" checked><span class="slider"></span></span>
+        </label>
+        <label class="setting">
+          <span class="setting-text"><strong>Bold stamp</strong><span>Keep the whole sign-off stamp bold</span></span>
+          <span class="switch"><input type="checkbox" id="opt-bold-stamp" checked><span class="slider"></span></span>
+        </label>
+        <label class="setting">
+          <span class="setting-text"><strong>Keep serial numbers</strong><span>Prints the list index (e.g. &ldquo;1.&rdquo;) before the case number</span></span>
+          <span class="switch"><input type="checkbox" id="opt-indices"><span class="slider"></span></span>
+        </label>
       </div>
 
+      <details class="advanced">
+        <summary>
+          <span>Advanced spacing &amp; alignment</span>
+          <svg class="ic"><use href="#i-chevron"/></svg>
+        </summary>
+        <div class="advanced-body">
+          <div class="adv-row">
+            <div class="adv-text"><strong>Appearance spacing</strong><span>Line spacing of the counsel presence block</span></div>
+            <div class="segmented" id="seg-appearance" data-opt="appearanceSpacing">
+              <button type="button" data-value="1.0">1.0</button>
+              <button type="button" data-value="1.5">1.5</button>
+              <button type="button" data-value="2.0">2.0</button>
+            </div>
+          </div>
+          <div class="adv-row">
+            <div class="adv-text"><strong>Body spacing</strong><span>Line spacing of the typed order text</span></div>
+            <div class="segmented" id="seg-body" data-opt="bodySpacing">
+              <button type="button" data-value="1.0">1.0</button>
+              <button type="button" data-value="1.5">1.5</button>
+              <button type="button" data-value="2.0">2.0</button>
+            </div>
+          </div>
+          <div class="adv-row">
+            <div class="adv-text"><strong>Stamp alignment</strong><span>Offset adds 12 / 4 / 2 / 2 trailing spaces to the four stamp lines</span></div>
+            <div class="segmented" id="seg-stamp-align" data-opt="stampAlignment">
+              <button type="button" data-value="perfect">Perfect right</button>
+              <button type="button" data-value="offset">Offset right</button>
+            </div>
+          </div>
+          <div class="adv-row adv-steno">
+            <div class="adv-text"><strong>Steno initials</strong><span>Appended to the stamp date, e.g. 13.08.2026/NG</span></div>
+            <label class="switch"><input type="checkbox" id="opt-steno"><span class="slider"></span></label>
+            <label class="field field-inline" id="steno-initials-field" hidden>
+              <span>Initials</span>
+              <input type="text" id="opt-steno-text" placeholder="e.g. NG" maxlength="8">
+            </label>
+          </div>
+        </div>
+      </details>
+    </section>
+  </main>
+
+  <!-- Inspector: live preview + parsed details -->
+  <aside class="inspector">
+    <div class="inspector-head">
+      <h2>Preview</h2>
+      <div class="tabs" role="tablist" aria-label="Preview mode">
+        <button id="tab-paper" class="tab is-active" type="button" role="tab">Paper</button>
+        <button id="tab-cases" class="tab" type="button" role="tab">Cases <span id="tab-cases-count" class="tab-count" hidden></span></button>
+      </div>
+    </div>
+
+    <div class="inspector-body">
       <div id="preview-empty" class="preview-empty">
-        <div class="preview-empty-icon">📄</div>
-        <p class="preview-empty-title">Awaiting Source Upload</p>
-        <p class="muted">Upload your compiled .docx / .odt cause list file on the left side to compile live order sheets instantly!</p>
+        <div class="preview-empty-art"><svg class="ic"><use href="#i-file-text"/></svg></div>
+        <p class="preview-empty-title">Nothing to preview yet</p>
+        <p>Upload a cause list and the first sheets appear here.</p>
       </div>
 
       <div id="preview-paper" class="preview-paper" hidden></div>
 
       <div id="preview-cases" class="preview-cases" hidden>
-        <div class="table-scroll">
-          <table>
-            <thead><tr><th>S.No</th><th>Case No.</th><th>CNR No.</th><th>Title</th><th>Stage</th></tr></thead>
-            <tbody id="cases-tbody"></tbody>
-          </table>
-        </div>
+        <div id="cases-list" class="cases-list"></div>
       </div>
-    </section>
 
-    <section class="card">
-      <h2 class="card-title"><span class="card-icon">📐</span> Page Formatting Rules</h2>
-      <div class="rules-grid">
-        <div class="rule-box">
-          <p class="rule-label">STANDARD MARGINS</p>
-          <p>Left/Right: <strong>4 cm</strong></p>
-          <p>Top/Bottom: <strong>2.5 cm</strong></p>
+      <div id="file-info" class="props" hidden>
+        <p class="props-heading">Parsed from the file</p>
+        <div class="prop prop-stack"><span class="prop-k">Court header</span><span class="prop-v" id="fs-court"></span></div>
+        <div class="prop prop-stack"><span class="prop-k">In the court of</span><span class="prop-v" id="fs-judge"></span></div>
+        <div class="prop"><span class="prop-k">List date</span><span class="prop-v" id="fs-date"></span></div>
+        <div class="prop prop-bar">
+          <span class="prop-k">Cases</span><span class="prop-v" id="fs-count"></span>
+          <span class="bar"><span id="fs-count-bar"></span></span>
         </div>
-        <div class="rule-box">
-          <p class="rule-label">DESIGN ACCENTS</p>
-          <p><strong>Times New Roman 14pt</strong></p>
-          <p>Single-line spacing</p>
+        <div class="prop prop-bar" id="fs-cnr-row" hidden>
+          <span class="prop-k">CNR matched</span><span class="prop-v" id="fs-cnr"></span>
+          <span class="bar"><span id="fs-cnr-bar" class="is-success"></span></span>
         </div>
+        <div class="prop prop-stack"><span class="prop-k">Stages</span><span class="prop-v stage-chips" id="fs-stages"></span></div>
       </div>
-    </section>
+    </div>
 
+    <div class="inspector-foot">
+      <p class="props-heading">Page setup</p>
+      <div class="props props-compact">
+        <div class="prop"><span class="prop-k">Paper</span><span class="prop-v">A4</span></div>
+        <div class="prop"><span class="prop-k">Font</span><span class="prop-v">Times New Roman 14 pt</span></div>
+        <div class="prop"><span class="prop-k">Margins</span><span class="prop-v">4 cm sides &middot; 2.5 cm top &amp; bottom</span></div>
+      </div>
+    </div>
   </aside>
-</main>
 
-<footer class="app-footer">
-  <p>All processing happens locally in your browser &mdash; the cause list never leaves this computer.</p>
-</footer>
+</div>
 
 <div id="toast" class="toast" hidden></div>
 

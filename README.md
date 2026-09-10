@@ -49,8 +49,10 @@ npm test           # pipeline tests (Node, no dependencies to install)
    include case indices.
 3. **Generate** — download the compiled sheets as `.docx` or `.odt`
    (Times New Roman 14pt, A4, 4 cm left/right and 2.5 cm top/bottom margins,
-   page break between cases). The sidebar shows a live paper preview and a
-   parsed-cases table, plus the **Split Court PDF Documents** companion link.
+   page break between cases). The download buttons sit in the sticky bar at
+   the top of the workspace; the right-hand panel shows a live paper preview,
+   a parsed-cases table, and the details read from the file. The left sidebar
+   navigates the three sections and links to the **Split PDF** companion tool.
 
 Each generated sheet looks like:
 
